@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PEGGOY · Drop the ball. Every peg pays.</title>
+  <meta name="description" content="A pegboard arcade on Robinhood Chain. Stake $PEGGOY, earn balls every second, ETH streams to stakers and the weekly Drop pays out. Launch 03 Oct 2026, 15:00 UTC on Pons." />
+  <meta property="og:title" content="PEGGOY · Drop the ball. Every peg pays." />
+  <meta property="og:description" content="Pegboard arcade on Robinhood Chain. $PEGGOY launches 03 Oct 2026 · 15:00 UTC on Pons." />
+  <meta property="og:image" content="https://peggoy.fun/og.png" />
+  <meta property="og:url" content="https://peggoy.fun/" />
+  <link rel="canonical" href="https://peggoy.fun/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@peggoydotfun" />
+  <meta name="theme-color" content="#0d0b14" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d0b14'/%3E%3Ccircle cx='16' cy='17' r='9' fill='%23ff5b14'/%3E%3Ccircle cx='13' cy='16' r='1.6' fill='%230d0b14'/%3E%3Ccircle cx='19' cy='16' r='1.6' fill='%230d0b14'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="assets/img/hero.webp" />
+  <link rel="stylesheet" href="styles.css" />
+  <script>document.documentElement.classList.add('js')</script>
+</head>
+<body class="is-locked">
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- boot: INSERT COIN -->
+  <div class="boot" id="boot" role="status" aria-live="polite">
+    <img class="boot__mascot" src="assets/img/peggoy.webp" alt="" width="180" height="180" />
+    <div class="boot__word">PEGGOY</div>
+    <div class="boot__bar"><i id="bootFill"></i></div>
+    <div class="boot__txt" id="bootTxt">INSERT COIN</div>
+    <div class="boot__foot">PEGBOARD ARCADE · ROBINHOOD CHAIN</div>
+  </div>
+  <script>setTimeout(function(){var b=document.getElementById('boot');if(b){b.classList.add('is-gone');document.body.classList.remove('is-locked')}},9000)</script>
+
+  <!-- persistent 3D stage (one WebGL canvas, behind the page) -->
+  <canvas class="stage" id="stage" aria-hidden="true"></canvas>
+
+  <header class="topbar">
+    <a class="wordmark" href="#top" data-scroll aria-label="PEGGOY home">PEGGOY</a>
+    <div class="hud" aria-label="Arcade status">
+      <span class="hud__item">BALLS <b id="credits">00</b></span>
+      <span class="hud__item hud__hi">HI-SCORE <b id="hiscore">0</b></span>
+    </div>
+    <div class="topbar__right">
+      <span class="pill"><i class="pill__dot"></i>Robinhood Chain</span>
+      <a class="navlink" href="machine.html">Machine</a>
+      <button class="iconbtn" type="button" id="mute" aria-label="Arcade sounds"></button>
+      <a class="btn btn--small btn--ghost topbar__buy" id="buyTop" data-buy href="#launch" data-scroll>Buy · soon</a>
+      <button class="btn btn--small" type="button" data-connect>Connect wallet</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- 1 · hero -->
+    <section class="hero" data-theme="dark" data-stage="cabinet">
+      <div class="hero__bg" style="background-image:url(assets/img/hero.webp)"></div>
+      <div class="hero__inner">
+        <p class="eyebrow">• Pegboard arcade on Robinhood Chain •</p>
+        <h1 class="hero__title">PEGGOY</h1>
+        <p class="hero__tag">Drop the ball. <em>Every peg pays.</em></p>
+        <p class="hero__copy">Stake $PEGGOY. Your stake earns <b>balls</b> every second. ETH streams to stakers, and every Friday the Drop pays out, drawn by public randomness nobody controls.</p>
+        <div class="countdown" id="countdown" aria-label="Time to launch">
+          <div class="countdown__label" id="cdLabel">LAUNCH · 03 OCT 2026 · 15:00 UTC</div>
+          <div class="countdown__digits">
+            <span><b data-cd="d">00</b><i>DAYS</i></span><em>:</em>
+            <span><b data-cd="h">00</b><i>HRS</i></span><em>:</em>
+            <span><b data-cd="m">00</b><i>MIN</i></span><em>:</em>
+            <span><b data-cd="s">00</b><i>SEC</i></span>
+          </div>
+        </div>
+        <div class="ca ca--hero" data-ca-box>
+          <span class="mono">CA</span>
+          <code data-ca-value>SOON · 03 OCT · 15:00 UTC</code>
+          <button class="gb" type="button" data-ca-copy disabled>COPY</button>
+          <a class="btn btn--small" data-buy href="#launch" data-scroll>Buy on Pons · soon</a>
+        </div>
+        <div class="hero__ctas">
+          <a class="btn" href="machine.html">▶ Open the Machine</a>
+          <a class="btn btn--ghost" href="#practice" data-scroll>Practice mode</a>
+        </div>
+      </div>
+      <div class="hero__scroll mono">scroll ↓</div>
+    </section>
+
+    <!-- 2 · manifesto -->
+    <section class="manifesto light" data-theme="light">
+      <p class="mono muted">01 · the rule</p>
+      <p class="manifesto__text" data-words>Most launch raffles hand out tickets for a free signature. Then one farmer signs a thousand times. <em>PEGGOY gives nothing for free.</em> Your balls come from stake × time. Split it across a thousand wallets and you earn exactly the same.</p>
+    </section>
+
+    <!-- 3 · how to play -->
+    <section class="how" id="how" data-theme="dark">
+      <div class="section-head">
+        <p class="mono muted">02 · how to play</p>
+        <h2 class="chapter">Three buttons.<br />No tricks.</h2>
+      </div>
+      <ol class="steps">
+        <li class="step">
+          <img src="assets/img/tile-1.webp" alt="A hand dropping an orange ball into the coin slot" loading="lazy" width="560" height="560" />
+          <span class="step__n">01</span>
+          <h3>Insert coin</h3>
+          <p>Stake $PEGGOY in the Machine. Withdraw anytime: no lock, no fee, no owner switch to stop it.</p>
+        </li>
+        <li class="step">
+          <img src="assets/img/tile-4.webp" alt="An hourglass filled with orange balls" loading="lazy" width="560" height="560" />
+          <span class="step__n">02</span>
+          <h3>Earn balls</h3>
+          <p><code>balls = stake × seconds</code>. Every second you stay in, you hold more balls for this week's Drop.</p>
+        </li>
+        <li class="step">
+          <img src="assets/img/tile-2.webp" alt="A ball bouncing down a pegboard" loading="lazy" width="560" height="560" />
+          <span class="step__n">03</span>
+          <h3>The Drop</h3>
+          <p>Fridays 15:00 UTC. 14 winners drawn by balls: 1 × 40%, 3 × 10%, 10 × 3% of the week's pot.</p>
+        </li>
+      </ol>
+      <div class="split">
+        <div class="split__bar"><span style="--w:80%">80% · STREAM</span><span style="--w:20%">20% · DROP</span></div>
+        <p class="muted">Every wei of creator tax that reaches the Machine splits on arrival: 80% streams to stakers over 7 days, 20% builds the weekly Drop.</p>
+      </div>
+    </section>
+
+    <!-- 4 · practice board -->
+    <section class="practice" id="practice" data-theme="dark">
+      <div class="section-head">
+        <p class="mono muted">03 · practice mode</p>
+        <h2 class="chapter">Try the board.</h2>
+        <p class="muted">Runs in your browser. No wallet, no prize, no tracking. Click above the pegs to drop where you aim, or press <kbd>Space</kbd>.</p>
+      </div>
+      <div class="cab">
+        <div class="cab__head">
+          <span class="px">PRACTICE MODE</span>
+          <span class="px cab__score">SCORE <b id="score">0</b></span>
+        </div>
+        <div class="cab__glass">
+          <canvas id="board" aria-label="Pegboard practice game. Click to drop a ball." role="img"></canvas>
+        </div>
+        <div class="cab__panel">
+          <button class="gb gb--go" type="button" id="drop1">▶ DROP</button>
+          <button class="gb" type="button" id="drop10">DROP ×10</button>
+          <span class="cab__hint px">NO WALLET · NO PRIZE</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · fair by construction -->
+    <section class="fair light" id="fair" data-theme="light">
+      <div class="section-head">
+        <p class="mono muted">04 · fair by construction</p>
+        <h2 class="chapter">Built so we<br />can't cheat either.</h2>
+      </div>
+      <div class="fair__grid">
+        <article class="card">
+          <img src="assets/img/tile-7.webp" alt="" loading="lazy" width="560" height="560" />
+          <h3>Sybil-neutral</h3>
+          <p>Balls are linear in stake × time. One wallet or a thousand: same balls, same odds. Farming buys nothing.</p>
+        </article>
+        <article class="card">
+          <img src="assets/img/tile-5.webp" alt="" loading="lazy" width="560" height="560" />
+          <h3>Randomness nobody owns</h3>
+          <p>Each Drop uses a <b>drand</b> round fixed by the contract when the week starts, mixed with the block hash and verified on chain.</p>
+        </article>
+        <article class="card">
+          <img src="assets/img/tile-6.webp" alt="" loading="lazy" width="560" height="560" />
+          <h3>Three keys, 48 hours</h3>
+          <p>Owner is a 2-of-3 Safe behind a 48 h timelock. It can tune two numbers. It cannot touch stakes, streamed ETH or the pot.</p>
+        </article>
+        <article class="card">
+          <img src="assets/img/tile-9.webp" alt="" loading="lazy" width="560" height="560" />
+          <h3>On chain, not in a database</h3>
+          <p>No sign-up list on a server. Every weight is a Staked or Withdrawn event anyone can replay. Winners are addresses, not short codes.</p>
+        </article>
+        <article class="card">
+          <img src="assets/img/tile-3.webp" alt="" loading="lazy" width="560" height="560" />
+          <h3>No dust tricks</h3>
+          <p>Starting a reward round needs 0.01 ETH queued or the last round over, so a 1-wei kick can't hold real rewards back a week.</p>
+        </article>
+        <article class="card">
+          <img src="assets/img/tile-8.webp" alt="" loading="lazy" width="560" height="560" />
+          <h3>Open source</h3>
+          <p>Contracts, tests and this site are public on <a class="inline" href="https://github.com/peggoydotfun/peggoy" target="_blank" rel="noopener">GitHub</a>. Re-run any Drop from its seed and get the same winners.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 6 · ETH flow -->
+    <section class="flow" data-theme="dark">
+      <div class="section-head">
+        <p class="mono muted">05 · where the ETH goes</p>
+        <h2 class="chapter">Follow the ball.</h2>
+      </div>
+      <svg class="flow__svg" viewBox="0 0 960 420" role="img" aria-labelledby="flowTitle">
+        <title id="flowTitle">Creator tax ETH goes into the Machine; 80% streams to stakers over 7 days, 20% builds the weekly Drop paid to 14 winners.</title>
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="currentColor" /></marker>
+        </defs>
+        <g class="flow__node"><rect x="20" y="170" width="190" height="80" rx="14" /><text x="115" y="204">CREATOR TAX</text><text x="115" y="228" class="sub">ETH from $PEGGOY trades</text></g>
+        <g class="flow__node flow__node--hot"><rect x="330" y="160" width="220" height="100" rx="18" /><text x="440" y="203">THE MACHINE</text><text x="440" y="229" class="sub">splits on arrival</text></g>
+        <g class="flow__node"><rect x="680" y="40" width="260" height="110" rx="14" /><text x="810" y="84">80% · STREAM</text><text x="810" y="110" class="sub">pro rata to stakers · 7 days</text></g>
+        <g class="flow__node"><rect x="680" y="270" width="260" height="110" rx="14" /><text x="810" y="314">20% · THE DROP</text><text x="810" y="340" class="sub">Fridays 15:00 UTC · 14 winners</text></g>
+        <path class="flow__path" d="M210 210 H330" marker-end="url(#ah)" />
+        <path class="flow__path" d="M550 190 C610 190 620 95 680 95" marker-end="url(#ah)" />
+        <path class="flow__path" d="M550 230 C610 230 620 325 680 325" marker-end="url(#ah)" />
+        <circle class="flow__ball" r="7"><animateMotion dur="3.2s" repeatCount="indefinite" path="M210 210 H330 M550 190 C610 190 620 95 680 95" /></circle>
+      </svg>
+      <ol class="flow__list" aria-hidden="true">
+        <li><b>CREATOR TAX</b><span>ETH from $PEGGOY trades</span></li>
+        <li class="is-hot"><b>THE MACHINE</b><span>splits on arrival</span></li>
+        <li><b>80% · STREAM</b><span>pro rata to stakers · 7 days</span></li>
+        <li><b>20% · THE DROP</b><span>Fridays 15:00 UTC · 14 winners</span></li>
+      </ol>
+      <div class="slots" aria-label="Drop slot payouts">
+        <span style="--h:30%">3%</span><span style="--h:30%">3%</span><span style="--h:30%">3%</span><span style="--h:55%">10%</span><span class="slots__top" style="--h:100%">40%</span><span style="--h:55%">10%</span><span style="--h:55%">10%</span><span style="--h:30%">3%</span><span style="--h:30%">3%</span>
+      </div>
+      <p class="muted center small">Slot row of the Drop (10 × 3% shown in part). Unclaimed prizes roll into the next week after 30 days.</p>
+    </section>
+
+    <!-- 7 · timeline -->
+    <section class="timeline light" id="launch" data-theme="light">
+      <div class="section-head">
+        <p class="mono muted">06 · launch</p>
+        <h2 class="chapter">Stage select.</h2>
+      </div>
+      <ol class="stages">
+        <li class="stage-card is-done"><span class="px">STAGE 0</span><b>01 OCT</b><p>Site and practice mode live. Contracts public.</p></li>
+        <li class="stage-card is-next"><span class="px">STAGE 1</span><b>03 OCT · 15:00 UTC</b><p>$PEGGOY launches on Pons. The Machine opens: stake and the 80% stream start.</p></li>
+        <li class="stage-card"><span class="px">STAGE 2</span><b>10 OCT · 15:00 UTC</b><p>First Drop, settled with the on-chain drand check.</p></li>
+        <li class="stage-card"><span class="px">BOSS</span><b>AUDIT</b><p>External audit published, caps raised, live replays of every Drop.</p></li>
+      </ol>
+    </section>
+
+    <!-- 8 · closing -->
+    <section class="closing" data-theme="dark" data-stage="peggoy">
+      <img class="closing__mascot" src="assets/img/peggoy.webp" alt="Peggoy, the orange ball mascot" width="180" height="180" loading="lazy" />
+      <p class="eyebrow">• player one, ready •</p>
+      <h2 class="closing__title">Insert coin.</h2>
+      <div class="ca" data-ca-box>
+        <span class="mono">CA</span>
+        <code data-ca-value>SOON · 03 OCT · 15:00 UTC</code>
+        <button class="gb" type="button" data-ca-copy disabled>COPY</button>
+      </div>
+      <div class="hero__ctas center">
+        <a class="btn" id="buyMain" data-buy href="#launch" data-scroll>Buy $PEGGOY on Pons · soon</a>
+        <a class="btn btn--ghost" href="https://x.com/peggoydotfun" target="_blank" rel="noopener">Follow on X</a>
+        <a class="btn btn--ghost" href="https://t.me/peggoydotfun" target="_blank" rel="noopener">Join Telegram</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span class="wordmark wordmark--small">PEGGOY</span>
+    <p class="muted small">Unaudited at launch: caps stay low until the audit. The Drop is a prize draw funded by fees; check your local rules. The team never DMs first and never asks for a seed phrase.</p>
+    <p class="socials mono small"><a href="https://x.com/peggoydotfun" target="_blank" rel="noopener">X · @peggoydotfun</a><a href="https://t.me/peggoydotfun" target="_blank" rel="noopener">Telegram · @peggoydotfun</a><a href="https://github.com/peggoydotfun/peggoy" target="_blank" rel="noopener">GitHub · peggoydotfun/peggoy</a></p>
+    <p class="mono muted small">Robinhood Chain · 4663</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "active": "testnet",
+  "networks": {
+    "testnet": {
+      "chainId": 46630,
+      "chainName": "Robinhood Chain Testnet",
+      "rpc": "https://robinhood-sepolia-rpc.publicnode.com",
+      "walletRpc": "https://robinhood-sepolia-rpc.publicnode.com",
+      "explorer": "https://explorer.testnet.chain.robinhood.com",
+      "machine": "0x5B2eba6D854F898D59b5f77E7d923085e3475C2a",
+      "timelock": "0xebA64E8187b941E538420f286BBAA9c1A927f984",
+      "token": "0xdf7edd050F0af2773C32F955857142995E084e64",
+      "genesis": 1790434800,
+      "demo": true,
+      "faucets": ["https://faucet.chainstack.com/robinhood-chain-testnet-faucet", "https://faucet.quicknode.com/robinhood/testnet"]
+    },
+    "mainnet": {
+      "chainId": 4663,
+      "chainName": "Robinhood Chain",
+      "rpc": "https://rpc.ordofi.network",
+      "walletRpc": "https://rpc.mainnet.chain.robinhood.com",
+      "explorer": "https://robinhoodchain.blockscout.com",
+      "machine": "",
+      "timelock": "",
+      "token": "",
+      "genesis": 1791039600
+    }
+  }
+}
