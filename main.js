@@ -10,7 +10,7 @@ import { initConnect } from './connect-ui.js';
 // Set at launch by `./deploy.sh ca 0x…` (the line format matters).
 const CONFIG = {
   ca: '',
-  launch: Date.UTC(2026, 9, 3, 15, 0, 0), // Fri 03 Oct 2026 · 15:00 UTC
+  launch: Date.UTC(2026, 9, 3, 15, 0, 0), // Sat 03 Oct 2026 · 15:00 UTC
   pons: 'https://ponsfamily.com/launchpad/',
 };
 

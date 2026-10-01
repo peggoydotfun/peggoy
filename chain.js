@@ -9,7 +9,9 @@ const SEL = {
   dropBps: '0xd9129498', currentEpoch: '0x76671808', epochEnd: '0xd9be1efe', dropPot: '0xc24aacdb',
   balanceOf: '0x70a08231', earned: '0x008cc262', ballsOf: '0x5bdf4d58', totalBalls: '0xc7b2d850',
   allowance: '0xdd62ed3e', decimals: '0x313ce567', symbol: '0x95d89b41',
-  approve: '0x095ea7b3', faucet: '0xde5f72fd', stake: '0xa694fc3a', withdraw: '0x2e1a7d4d', claim: '0x4e71d92d', exit: '0xe9fad8ee', roll: '0xcd5e3c5d',
+  approve: '0x095ea7b3', faucet: '0xde5f72fd',
+  drandRound: '0xaa694896', draws: '0x0cc36c36', settle: '0x39c2ebb9', enter: '0x8ecee083', winner: '0xb47deb3c',
+  paid: '0x8d42394d', entered: '0x4d333814', claimSlot: '0xc3490263', dropDistributor: '0x0ca86d3a', stake: '0xa694fc3a', withdraw: '0x2e1a7d4d', claim: '0x4e71d92d', exit: '0xe9fad8ee', roll: '0xcd5e3c5d',
 };
 const word = (v) => BigInt(v).toString(16).padStart(64, '0');
 const addrWord = (a) => a.toLowerCase().replace(/^0x/, '').padStart(64, '0');
@@ -70,6 +72,40 @@ export async function machineState(user) {
   return s;
 }
 
+/// Last finished week's draw on the PeggoyDrop contract (null when no Drop contract is configured).
+export async function dropState(week, user) {
+  const c = await config();
+  const D = c.drop;
+  if (!/^0x[0-9a-fA-F]{40}$/.test(D || '') || week < 0n) return null;
+  const [distRaw, roundRaw, drawRaw, potRaw] = await Promise.all([
+    call(c.machine, SEL.dropDistributor), call(D, enc(SEL.drandRound, week)), call(D, enc(SEL.draws, week)), call(c.machine, enc(SEL.dropPot, week)),
+  ]);
+  const w = (i) => BigInt('0x' + drawRaw.slice(2 + i * 64, 2 + (i + 1) * 64));
+  const st = {
+    drop: D, week, appointed: ('0x' + distRaw.slice(-40)).toLowerCase() === D.toLowerCase(), round: Number(BigInt(roundRaw)),
+    seed: '0x' + drawRaw.slice(2, 66), settledAt: Number(w(2)), pot: w(3), totalBalls: w(4), paidOut: w(5), swept: w(6) === 1n,
+    potInMachine: BigInt(potRaw), slots: [], entered: false,
+  };
+  if (st.settledAt) {
+    const idx = [...Array(14).keys()];
+    const [winners, paid] = await Promise.all([
+      Promise.all(idx.map((i) => call(D, enc(SEL.winner, week, i)))), Promise.all(idx.map((i) => uint(D, enc(SEL.paid, week, i)))),
+    ]);
+    st.slots = idx.map((i) => ({ slot: i, winner: '0x' + winners[i].slice(-40), paid: paid[i] === 1n, bps: i === 0 ? 4000 : i < 4 ? 1000 : 300 }));
+    if (user) st.entered = (await uint(D, enc(SEL.entered, week, user))) === 1n;
+  }
+  return st;
+}
+
+/// The drand evmnet signature for `round`, from the public API (anyone could fetch it from any drand relay).
+export async function drandSignature(round) {
+  const r = await fetch(`https://api.drand.sh/v2/beacons/evmnet/rounds/${round}`);
+  if (!r.ok) throw new Error('drand round ' + round + ' is not published yet.');
+  const j = await r.json();
+  if (!/^[0-9a-f]{128}$/.test(j.signature || '')) throw new Error('Unexpected drand response.');
+  return j.signature;
+}
+
 async function send(to, data) {
   const c = await config();
   const acc = W.account();
@@ -98,6 +134,10 @@ export const tx = {
   exit: (m) => send(m, SEL.exit),
   roll: (m) => send(m, SEL.roll),
   faucet: (token) => send(token, SEL.faucet), // testnet demo token only
+  // PeggoyDrop: settle(uint256,bytes) and enter(uint256,address[]) carry dynamic args, encoded by hand
+  settle: (drop, week, sigHex) => send(drop, SEL.settle + word(week) + word(0x40) + word(64) + sigHex),
+  enter: (drop, week, user) => send(drop, SEL.enter + word(week) + word(0x40) + word(1) + addrWord(user)),
+  claimSlot: (drop, week, slot) => send(drop, enc(SEL.claimSlot, week, slot)),
 };
 
 // ---------- amounts ----------

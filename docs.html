@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Docs · PEGGOY</title>
+  <meta name="description" content="How PEGGOY works: staking, balls, the ETH stream, the weekly Drop, drand randomness, contracts and risks." />
+  <meta property="og:title" content="PEGGOY docs" />
+  <meta property="og:image" content="https://peggoy.fun/og.png" />
+  <meta property="og:url" content="https://peggoy.fun/docs.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@peggoydotfun" />
+  <meta name="theme-color" content="#0d0b14" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" href="/assets/img/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="canonical" href="https://peggoy.fun/docs.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="page-docs">
+  <div class="grain" aria-hidden="true"></div>
+  <header class="topbar is-solid">
+    <a class="wordmark" href="/" aria-label="PEGGOY home">PEGGOY</a>
+    <nav class="nav"><a href="/">Home</a><a href="machine.html">Machine</a><a href="docs.html" aria-current="page">Docs</a></nav>
+    <div class="topbar__right">
+      <span class="pill"><i class="pill__dot"></i>Robinhood Chain</span>
+      <button class="btn btn--small" type="button" data-connect>Connect wallet</button>
+    </div>
+  </header>
+
+  <div class="docs">
+    <aside class="docs__toc" aria-label="On this page">
+      <p class="px">MANUAL</p>
+      <ol>
+        <li><a href="#what">What is PEGGOY</a></li>
+        <li><a href="#play">How to play</a></li>
+        <li><a href="#balls">Balls</a></li>
+        <li><a href="#stream">The stream</a></li>
+        <li><a href="#drop">The Drop</a></li>
+        <li><a href="#fair">Fair by construction</a></li>
+        <li><a href="#owner">What the team can and can't do</a></li>
+        <li><a href="#contracts">Contracts</a></li>
+        <li><a href="#launch">Launch</a></li>
+        <li><a href="#risks">Risks</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ol>
+    </aside>
+
+    <main class="docs__body">
+      <p class="eyebrow">• player's manual •</p>
+      <h1 class="chapter">How PEGGOY works.</h1>
+      <p class="docs__lead">PEGGOY is a pegboard arcade machine on Robinhood Chain. You stake $PEGGOY, your stake earns <b>balls</b> every second, ETH from the creator tax streams to stakers, and every Saturday the <b>Drop</b> pays 14 winners picked by public randomness nobody controls.</p>
+
+      <section id="what">
+        <h2>What is PEGGOY</h2>
+        <div class="docs__cards">
+          <div><span class="px">TOKEN</span><b>$PEGGOY</b><p>Launched on Pons, Robinhood Chain (4663).</p></div>
+          <div><span class="px">MACHINE</span><b>Stake → earn ETH</b><p>One contract. No lock, no fee, no pause.</p></div>
+          <div><span class="px">SPLIT</span><b>80% stream · 20% Drop</b><p>Every wei of ETH that reaches the Machine.</p></div>
+          <div><span class="px">DROP</span><b>Saturdays 15:00 UTC</b><p>14 winners: 1 × 40%, 3 × 10%, 10 × 3%.</p></div>
+        </div>
+      </section>
+
+      <section id="play">
+        <h2>How to play</h2>
+        <ol class="docs__steps">
+          <li><b>Connect</b> any EVM wallet on the <a href="machine.html">Machine</a> page (Rabby, MetaMask, Coinbase Wallet…). Connecting only reads your address.</li>
+          <li><b>Stake</b> $PEGGOY. The first time takes two transactions: approve, then stake.</li>
+          <li><b>Earn.</b> ETH streams to you every second (claim it whenever you like) and you collect balls for this week's Drop.</li>
+          <li><b>Enter the Drop</b> after the week closes (or let anyone enter you), then claim any slot you win.</li>
+          <li><b>Leave anytime.</b> Withdraw part or all, or Exit (withdraw everything and claim ETH in one transaction).</li>
+        </ol>
+        <p class="docs__note">Before launch, the Machine page runs a <b>testnet demo</b>: grab free tPEGGOY from the faucet button and play the whole loop with tokens that have no value.</p>
+      </section>
+
+      <section id="balls">
+        <h2>Balls</h2>
+        <p><code>balls = stake × seconds</code>, booked per week on chain. Stake 1,000 $PEGGOY for a full week and you hold 1,000 × 604,800 balls in that week's Drop. Stake halfway through the week and you hold half as many.</p>
+        <p>Balls are <b>linear</b>. One wallet with 1,000 or ten wallets with 100 each earn exactly the same balls, and (see below) exactly the same odds. Splitting a stake buys nothing, so there is nothing to farm.</p>
+        <p>Balls reset every week. They are not a token and cannot be transferred: they are just a number the contract keeps (<code>ballsOf(address, week)</code>).</p>
+      </section>
+
+      <section id="stream">
+        <h2>The stream (80%)</h2>
+        <p>ETH that reaches the Machine waits in a queue, then streams to stakers pro rata over 7 days, second by second. A deposit cannot be sniped: staking a minute before ETH arrives earns a minute's share, not the whole deposit.</p>
+        <p>Anyone can <b>roll</b> the queue into the stream when a round ends, or mid-round once at least 0.01 ETH is queued (the leftover of the running round rolls in with it). That threshold stops a 1-wei round from holding real rewards back for a week.</p>
+        <p>ETH that streams while nobody is staked goes back to the queue instead of being lost.</p>
+      </section>
+
+      <section id="drop">
+        <h2>The Drop (20%)</h2>
+        <div class="docs__timeline">
+          <div><span class="px">SAT 15:00 UTC</span><p>The week closes. Balls are frozen.</p></div>
+          <div><span class="px">+ ~3 SECONDS</span><p>drand publishes the round that seeds this Drop: the first round after the close.</p></div>
+          <div><span class="px">SETTLE</span><p>Anyone submits that drand signature. The contract verifies it on chain and pulls the pot.</p></div>
+          <div><span class="px">3 DAYS</span><p>Entries: anyone enters any address. Balls come from the Machine, never from the caller.</p></div>
+          <div><span class="px">30 DAYS</span><p>Winners claim. Anyone may trigger a claim; it always pays the winner.</p></div>
+          <div><span class="px">AFTER</span><p>Whatever is unclaimed goes back to the Machine and is split 80/20 again.</p></div>
+        </div>
+        <h3>How winners are drawn</h3>
+        <p>Each of the 14 slots is an independent race. For every entered address, the contract computes a key <code>−ln(u) / balls</code>, where <code>u</code> is a uniform number derived from <code>keccak256(seed, slot, address)</code>. The lowest key takes the slot. With this "exponential race", your chance of winning any one slot is <b>exactly your balls ÷ all balls</b>, and slots are independent, so one address can win more than one.</p>
+        <p>Because the odds are exactly proportional to balls, it does not matter whether a stake sits in one wallet or a thousand. It also does not matter who enters first: keys do not depend on the order.</p>
+        <h3>Payouts</h3>
+        <table class="docs__table">
+          <thead><tr><th>Slots</th><th>Share each</th><th>Total</th></tr></thead>
+          <tbody><tr><td>1</td><td>40%</td><td>40%</td></tr><tr><td>3</td><td>10%</td><td>30%</td></tr><tr><td>10</td><td>3%</td><td>30%</td></tr></tbody>
+        </table>
+      </section>
+
+      <section id="fair">
+        <h2>Fair by construction</h2>
+        <ul class="docs__list">
+          <li><b>No list on a server.</b> Every weight is on chain. There is no sign-up database anyone could edit.</li>
+          <li><b>No free entries.</b> Free-signature airdrops get farmed by design, so PEGGOY gives nothing for them.</li>
+          <li><b>Randomness nobody owns.</b> drand (League of Entropy) evmnet, BLS on BN254, verified on chain. No block hash mixed in: a block hash could be nudged by whoever settles or by the sequencer.</li>
+          <li><b>Nobody picks the round.</b> It follows from the schedule: the first drand round after the week closes.</li>
+          <li><b>Reproducible.</b> Seed, balls and keys are public. Anyone can recompute every slot with <code>keyFor(seed, slot, address, balls)</code>.</li>
+        </ul>
+      </section>
+
+      <section id="owner">
+        <h2>What the team can and can't do</h2>
+        <p>The Machine's owner is a <b>48-hour timelock</b> run by a <b>2-of-3 Safe</b>. Every change is announced on chain two days before it can happen.</p>
+        <div class="docs__two">
+          <div class="docs__can"><span class="px">CAN (BOUNDED, 48 H NOTICE)</span><ul>
+            <li>Roll threshold: up to 1 ETH</li>
+            <li>Stream length: 1 to 30 days, between rounds</li>
+            <li>Drop share: 0 to 30%</li>
+            <li>Appoint the Drop contract, once, forever</li>
+            <li>Recover tokens sent by mistake (never $PEGGOY)</li>
+          </ul></div>
+          <div class="docs__cant"><span class="px">CAN'T</span><ul>
+            <li>Pause, lock or block withdrawals</li>
+            <li>Touch staked $PEGGOY</li>
+            <li>Touch ETH already streamed to stakers</li>
+            <li>Pick Drop winners or the drand round</li>
+            <li>Swap the Drop contract once appointed</li>
+          </ul></div>
+        </div>
+      </section>
+
+      <section id="contracts">
+        <h2>Contracts</h2>
+        <p>Source, tests and deploy scripts: <a href="https://github.com/peggoydotfun/peggoy" target="_blank" rel="noopener">github.com/peggoydotfun/peggoy</a>. 41 tests, including fuzzed solvency, real drand beacons and win-rate statistics.</p>
+        <table class="docs__table" id="addr">
+          <thead><tr><th>Contract</th><th>Mainnet (4663)</th><th>Testnet demo (46630)</th></tr></thead>
+          <tbody><tr><td colspan="3" class="muted">Loading…</td></tr></tbody>
+        </table>
+      </section>
+
+      <section id="launch">
+        <h2>Launch</h2>
+        <p>$PEGGOY launches on Pons <b>Saturday 03 Oct 2026, 15:00 UTC</b> (22:00 WIB). The contract address appears on the home page the moment it exists, with a copy button and a Buy on Pons link. Week #0 starts at the same moment; the first Drop settles Saturday 10 Oct, 15:00 UTC.</p>
+      </section>
+
+      <section id="risks">
+        <h2>Risks</h2>
+        <ul class="docs__list">
+          <li><b>Unaudited at launch.</b> Smart contracts can have bugs. Keep what you stake to what you can afford to lose.</li>
+          <li><b>Token price.</b> $PEGGOY can go down. Staking does not protect its price.</li>
+          <li><b>External dependencies.</b> Robinhood Chain and drand must be live. If drand stops, nothing is drawn by hand: the pot waits and rolls forward after 30 days.</li>
+          <li><b>Rewards depend on fees.</b> The stream and the Drop are funded by ETH that reaches the Machine. No fees, no rewards.</li>
+          <li><b>Prize draws.</b> The Drop is a prize draw funded by fees. Check your local rules.</li>
+        </ul>
+      </section>
+
+      <section id="faq">
+        <h2>FAQ</h2>
+        <details><summary>Is there a lock-up or a withdrawal fee?</summary><p>No. Withdraw any amount, any time, for gas only. There is no pause function.</p></details>
+        <details><summary>Do I have to claim ETH every week?</summary><p>No. Streamed ETH accrues to you and stays claimable until you claim it, even after you withdraw your stake.</p></details>
+        <details><summary>Do I need to do anything to be in the Drop?</summary><p>Hold a stake during the week, then be entered during the 3-day window after it closes. You can enter yourself in one click on the Machine page, and anyone (including a public bot) can enter you.</p></details>
+        <details><summary>Does splitting my stake across wallets help?</summary><p>No. Balls and odds are exactly proportional to stake × time, so splitting changes nothing except the gas you spend.</p></details>
+        <details><summary>Can the team choose the winners?</summary><p>No. The seed is the drand round that follows the week's close, verified on chain; balls come from the Machine; the draw is computed by the contract and can be recomputed by anyone.</p></details>
+        <details><summary>Why no airdrop for signing up?</summary><p>Because a free signature costs nothing to repeat a thousand times. Rewards here come only from stake × time.</p></details>
+        <details><summary>Will the team ever DM me?</summary><p>Never first. PEGGOY never asks for a seed phrase, a private key or any transaction outside the Machine page.</p></details>
+      </section>
+
+      <p class="socials mono small"><a href="https://x.com/peggoydotfun" target="_blank" rel="noopener">X · @peggoydotfun</a><a href="https://t.me/peggoydotfun" target="_blank" rel="noopener">Telegram · @peggoydotfun</a><a href="https://github.com/peggoydotfun/peggoy" target="_blank" rel="noopener">GitHub · peggoydotfun/peggoy</a></p>
+    </main>
+  </div>
+
+  <script type="module" src="docs.js"></script>
+</body>
+</html>

@@ -19,7 +19,7 @@ A pegboard arcade machine on Robinhood Chain.
 | **Stake** | Stake $PEGGOY in the Machine. Withdraw anytime: no lock, no fee, no pause |
 | **Balls** | `balls = stake × seconds`, booked per week on chain. Linear, so one wallet or a thousand earn the same |
 | **Stream · 80%** | 80% of every wei of ETH that reaches the Machine streams to stakers pro rata over 7 days |
-| **Drop · 20%** | 20% builds the weekly Drop, paid every Friday 15:00 UTC to 14 winners drawn by balls (1×40%, 3×10%, 10×3%) |
+| **Drop · 20%** | 20% builds the weekly Drop, paid every Saturday 15:00 UTC to 14 winners drawn by balls (1×40%, 3×10%, 10×3%) |
 
 No free-signature airdrop: free entries get farmed by design, so nothing is given for them.
 
@@ -29,7 +29,7 @@ No free-signature airdrop: free entries get farmed by design, so nothing is give
 |---|---|
 | Sybil-neutral | Weights are linear in stake × time; splitting buys nothing |
 | On chain | Every weight is a `Staked`/`Withdrawn` event; `ballsOf(user, week)` and `totalBalls(week)` are public views |
-| Randomness | drand round fixed by the contract when the week starts, mixed with the block hash (Drop distributor, v2) |
+| Randomness | The first drand `evmnet` round after the week closes, BLS-verified on chain; 14 independent exponential races weighted by balls |
 | Owner | 2-of-3 Safe behind a 48 h `TimelockController`; bounded parameters only, no path to stakes or streamed ETH |
 | No dust tricks | `roll()` needs 0.01 ETH queued or the round over, so a 1-wei round can't hold real rewards back |
 | No stuck ETH | An unreleased Drop pot rolls into the current week after 30 days, by anyone |
@@ -41,13 +41,14 @@ Full design and the gaps it closes: [`ARCHITECTURE.md`](ARCHITECTURE.md). Launch
 | | Network | Address |
 |---|---|---|
 | `PeggoyMachine` (demo) | Robinhood testnet 46630 | `0x5B2eba6D854F898D59b5f77E7d923085e3475C2a` |
+| `PeggoyDrop` (demo) | Robinhood testnet 46630 | `0x6e8e3162eAF5e74ea523985CA0AEA8baB6dd9331` |
 | `TimelockController` (demo) | Robinhood testnet 46630 | `0xebA64E8187b941E538420f286BBAA9c1A927f984` |
 | `DemoToken` tPEGGOY (faucet) | Robinhood testnet 46630 | `0xdf7edd050F0af2773C32F955857142995E084e64` |
 | `PeggoyMachine` | Robinhood Chain 4663 | deployed before launch |
 
 ```bash
 git clone --recurse-submodules https://github.com/peggoydotfun/peggoy.git
-cd peggoy/contracts && forge test     # 30 tests, incl. fuzzed solvency and balls accounting
+cd peggoy/contracts && forge test     # 41 tests: fuzzed solvency, balls accounting, real drand beacons, win-rate statistics
 ```
 
 > [!IMPORTANT]

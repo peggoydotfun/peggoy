@@ -17,7 +17,7 @@ import {PeggoyMachine} from "../src/PeggoyMachine.sol";
 contract Deploy is Script {
     function run() external {
         address safe = vm.envAddress("SAFE");
-        uint256 genesis = vm.envOr("GENESIS", uint256(1791039600)); // Fri 03 Oct 2026 15:00 UTC
+        uint256 genesis = vm.envOr("GENESIS", uint256(1791039600)); // Sat 03 Oct 2026 15:00 UTC
         require(block.chainid == 4663 || block.chainid == 31337, "not Robinhood Chain mainnet");
         require(safe.code.length > 0, "SAFE is not a contract: create it on app.safe.global first");
 

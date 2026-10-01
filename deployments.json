@@ -10,6 +10,7 @@
       "machine": "0x5B2eba6D854F898D59b5f77E7d923085e3475C2a",
       "timelock": "0xebA64E8187b941E538420f286BBAA9c1A927f984",
       "token": "0xdf7edd050F0af2773C32F955857142995E084e64",
+      "drop": "0x6e8e3162eAF5e74ea523985CA0AEA8baB6dd9331",
       "genesis": 1790434800,
       "demo": true,
       "faucets": ["https://faucet.chainstack.com/robinhood-chain-testnet-faucet", "https://faucet.quicknode.com/robinhood/testnet"]
@@ -23,6 +24,7 @@
       "machine": "",
       "timelock": "",
       "token": "",
+      "drop": "",
       "genesis": 1791039600
     }
   }

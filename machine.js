@@ -6,7 +6,7 @@ import { sfx, unlock, isMuted, setMuted } from './sound.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = W.esc;
-const ST = { s: null, err: '', busy: '', msg: '', amount: '', cfg: null };
+const ST = { s: null, d: null, err: '', busy: '', msg: '', amount: '', cfg: null };
 const now = () => Date.now() / 1000;
 const kv = (k, v, cls = '') => `<div class="kv ${cls}"><span>${k}</span><i></i><b>${v}</b></div>`;
 const eth = (v) => C.fmt(v, 18, 5) + ' ETH';
@@ -23,6 +23,7 @@ async function load() {
   try {
     ST.cfg = await C.config();
     ST.s = await C.machineState(W.account()?.address);
+    ST.d = ST.s.deployed ? await C.dropState(ST.s.epoch - 1n, W.account()?.address).catch(() => null) : null;
     ST.err = '';
   } catch (e) {
     ST.err = 'Could not read the chain. Retrying…';
@@ -97,7 +98,7 @@ function stream() {
 
 function drop() {
   const s = ST.s;
-  if (!s?.deployed) return `<p class="muted">First Drop: Fri 10 Oct · 15:00 UTC.</p>`;
+  if (!s?.deployed) return `<p class="muted">First Drop: Sat 10 Oct · 15:00 UTC.</p>`;
   return `
     ${kv('WEEK', '#' + s.epoch.toString())}
     ${kv('POT', eth(s.pot), 'hot')}
@@ -106,11 +107,41 @@ function drop() {
     <p class="small muted">Winners are drawn by balls (stake × seconds) from a drand round fixed when the week starts. Splitting your stake across wallets does not change your odds.</p>`;
 }
 
+function draw() {
+  const s = ST.s, d = ST.d, acc = W.account(), busy = ST.busy ? 'disabled' : '';
+  if (!s?.deployed || s.epoch === 0n) return `<p class="muted">The first draw runs when week #0 closes.</p>`;
+  if (!d) return '<p class="muted">Draw contract not configured.</p>';
+  const head = kv('WEEK', '#' + d.week.toString()) + kv('DRAND ROUND', '#' + d.round);
+  if (!d.settledAt) {
+    if (!d.appointed) return `${head}${kv('POT WAITING', eth(d.potInMachine))}<p class="small muted">The draw contract is being appointed through the 48 h timelock. The pot waits safely in the Machine.</p>`;
+    return `${head}${kv('POT', eth(d.potInMachine), 'hot')}
+      <p class="small muted">The week is closed. Anyone can settle it with drand round #${d.round}: the page fetches the signature and the contract verifies it.</p>
+      <button class="gb gb--go" type="button" data-act="settle" ${busy}>▶ SETTLE WITH DRAND</button>`;
+  }
+  const entryEnds = d.settledAt + 3 * 86400;
+  const open = now() < entryEnds;
+  const me = acc?.address.toLowerCase();
+  const rows = d.slots.map((x) => {
+    const mine = me && x.winner.toLowerCase() === me;
+    const amt = (d.pot * BigInt(x.bps)) / 10000n;
+    const who = /^0x0{40}$/.test(x.winner) ? '—' : mine ? 'YOU' : W.short(x.winner);
+    const act = mine && !open && !x.paid && !d.swept ? `<button class="gb gb--go gb--mini" type="button" data-claim="${x.slot}" ${busy}>CLAIM</button>` : x.paid ? '<em>PAID</em>' : '';
+    return `<tr class="${mine ? 'is-mine' : ''}"><td>#${x.slot + 1}</td><td>${x.bps / 100}%</td><td>${C.fmt(amt, 18, 5)}</td><td>${who}</td><td>${act}</td></tr>`;
+  }).join('');
+  const enterBtn = open && acc && !d.entered ? `<button class="gb gb--go" type="button" data-act="enter" ${busy}>▶ ENTER MY WALLET</button>` : '';
+  return `${head}${kv('POT', eth(d.pot), 'hot')}
+    ${kv(open ? 'ENTRIES CLOSE IN' : 'ENTRIES', open ? `<span data-left="${entryEnds}">${left(entryEnds)}</span>` : 'CLOSED')}
+    ${open ? `<p class="small muted">${d.entered ? 'Your wallet is entered.' : 'Enter your wallet (free, one transaction) or anyone can enter it for you. Order and timing change nothing.'}</p>` : ''}
+    ${enterBtn}
+    <table class="slots-table"><thead><tr><th>SLOT</th><th>SHARE</th><th>ETH</th><th>${open ? 'LEADING' : 'WINNER'}</th><th></th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="small muted">Seed ${d.seed.slice(0, 10)}… from drand round #${d.round}. Re-run it: keyFor(seed, slot, address, balls) on the contract.</p>`;
+}
+
 function contracts() {
   const s = ST.s, c = ST.cfg;
   if (!c) return '';
   const row = (k, a) => kv(k, /^0x[0-9a-fA-F]{40}$/.test(a || '') ? link(a) : 'AT LAUNCH');
-  return `${kv('NETWORK', c.demo ? 'TESTNET (DEMO)' : 'MAINNET')}${row('MACHINE', c.machine)}${row('TIMELOCK 48H', c.timelock)}${row(c.demo ? 'tPEGGOY' : '$PEGGOY', s?.token || c.token)}
+  return `${kv('NETWORK', c.demo ? 'TESTNET (DEMO)' : 'MAINNET')}${row('MACHINE', c.machine)}${row('DROP', c.drop)}${row('TIMELOCK 48H', c.timelock)}${row(c.demo ? 'tPEGGOY' : '$PEGGOY', s?.token || c.token)}
     ${c.net !== c.active ? '' : c.demo ? '<p class="small"><a href="?net=mainnet">Mainnet view ↗</a></p>' : '<p class="small"><a href="?net=testnet">Try the testnet demo ↗</a></p>'}
     <p class="small muted">${c.demo ? 'Testnet demo: same contract and 48 h timelock as mainnet; here the timelock is run by the deployer instead of the Safe.' : 'Owner is a 2-of-3 Safe behind a 48 h timelock. It can tune bounded numbers, never touch stakes or streamed ETH.'}</p>`;
 }
@@ -121,6 +152,7 @@ function renderStats() {
   $('#status').textContent = ST.err || status();
   put('#stream', stream());
   put('#drop', drop());
+  put('#draw', draw());
   put('#contracts', contracts());
 }
 function render() {
@@ -162,6 +194,8 @@ const ACT = {
   exit: () => run('EXIT', () => C.tx.exit(ST.s.machine)),
   roll: () => run('ROLL', () => C.tx.roll(ST.s.machine)),
   faucet: () => run('FAUCET', () => C.tx.faucet(ST.s.token)),
+  settle: () => run('SETTLE', async () => { const sig = await C.drandSignature(ST.d.round); await C.tx.settle(ST.d.drop, ST.d.week, sig); }),
+  enter: () => run('ENTER', () => C.tx.enter(ST.d.drop, ST.d.week, W.account().address)),
 };
 
 document.addEventListener('click', (e) => {
@@ -173,7 +207,8 @@ document.addEventListener('click', (e) => {
     const u = ST.s?.user; if (!u) return;
     ST.amount = C.fmt(u.wallet > 0n ? u.wallet : u.mine, ST.s.decimals, ST.s.decimals).replace(/,/g, '');
     render();
-  } else if (b.dataset.act) ACT[b.dataset.act]?.();
+  } else if (b.dataset.claim) run('CLAIM SLOT', () => C.tx.claimSlot(ST.d.drop, ST.d.week, +b.dataset.claim));
+  else if (b.dataset.act) ACT[b.dataset.act]?.();
 });
 document.addEventListener('input', (e) => { if (e.target.matches('[data-amount]')) ST.amount = e.target.value; });
 

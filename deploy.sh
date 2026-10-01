@@ -19,11 +19,12 @@ DOMAIN=$(cat .deploy-domain 2>/dev/null || echo peggoy.fun)
 build() {
   echo "→ dist/ (public files only, cache-busted)"
   rm -rf dist && mkdir -p dist/assets
-  cp index.html machine.html styles.css main.js machine.js board.js sound.js wallet.js chain.js connect-ui.js deployments.json robots.txt og.png dist/
+  cp index.html machine.html docs.html styles.css main.js machine.js docs.js board.js sound.js wallet.js chain.js connect-ui.js deployments.json robots.txt og.png favicon.ico site.webmanifest dist/
   cp -R assets/img assets/models dist/assets/
   V=$(date +%s)
   sed -i '' "s|href=\"styles.css\"|href=\"styles.css?v=$V\"|; s|src=\"main.js\"|src=\"main.js?v=$V\"|" dist/index.html
   sed -i '' "s|href=\"styles.css\"|href=\"styles.css?v=$V\"|; s|src=\"machine.js\"|src=\"machine.js?v=$V\"|" dist/machine.html
+  sed -i '' "s|href=\"styles.css\"|href=\"styles.css?v=$V\"|; s|src=\"docs.js\"|src=\"docs.js?v=$V\"|" dist/docs.html
 }
 
 ship() {

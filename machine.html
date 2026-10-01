@@ -9,7 +9,10 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@peggoydotfun" />
   <meta name="theme-color" content="#0d0b14" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d0b14'/%3E%3Ccircle cx='16' cy='17' r='9' fill='%23ff5b14'/%3E%3Ccircle cx='13' cy='16' r='1.6' fill='%230d0b14'/%3E%3Ccircle cx='19' cy='16' r='1.6' fill='%230d0b14'/%3E%3C/svg%3E" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" href="/assets/img/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
@@ -19,7 +22,7 @@
   <div class="grain" aria-hidden="true"></div>
   <header class="topbar is-solid">
     <a class="wordmark" href="/" aria-label="PEGGOY home">PEGGOY</a>
-    <nav class="nav"><a href="/">Home</a><a href="machine.html" aria-current="page">Machine</a></nav>
+    <nav class="nav"><a href="/">Home</a><a href="machine.html" aria-current="page">Machine</a><a href="docs.html">Docs</a></nav>
     <div class="topbar__right">
       <span class="pill"><i class="pill__dot"></i>Robinhood Chain</span>
       <button class="iconbtn" type="button" id="mute" aria-label="Arcade sounds"></button>
@@ -45,6 +48,10 @@
       <section class="panel panel--drop" aria-labelledby="dTitle">
         <div class="panel__title px" id="dTitle">THIS WEEK'S DROP · 20%</div>
         <div class="panel__body" id="drop"></div>
+      </section>
+      <section class="panel panel--draw" aria-labelledby="lTitle">
+        <div class="panel__title px" id="lTitle">LAST WEEK · THE DRAW</div>
+        <div class="panel__body" id="draw"></div>
       </section>
       <section class="panel" aria-labelledby="cTitle">
         <div class="panel__title px" id="cTitle">CONTRACTS</div>

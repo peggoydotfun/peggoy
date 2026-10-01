@@ -7,13 +7,13 @@ import {PeggoyMachine} from "../src/PeggoyMachine.sol";
 import {DemoToken} from "../src/DemoToken.sol";
 
 /// Robinhood Chain TESTNET (46630) demo: same Machine and 48 h timelock as mainnet, a faucet token instead of
-/// $PEGGOY, and epochs on the same Friday 15:00 UTC schedule (genesis one week before mainnet's).
+/// $PEGGOY, and epochs on the same Saturday 15:00 UTC schedule (genesis one week before mainnet's).
 ///
 ///   forge script script/DeployTestnet.s.sol --rpc-url robinhood_testnet --broadcast --private-key <testnet key>
 contract DeployTestnet is Script {
     function run() external {
         require(block.chainid == 46630, "not Robinhood Chain testnet");
-        uint256 genesis = vm.envOr("GENESIS", uint256(1790434800)); // Fri 26 Sep 2026 15:00 UTC
+        uint256 genesis = vm.envOr("GENESIS", uint256(1790434800)); // Sat 26 Sep 2026 15:00 UTC
         vm.startBroadcast();
         address[] memory roles = new address[](1);
         roles[0] = msg.sender;

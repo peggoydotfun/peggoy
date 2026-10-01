@@ -1,6 +1,6 @@
 # PEGGOY launch runbook
 
-Launch: **Fri 03 Oct 2026 · 15:00 UTC** (22:00 WIB). Site: https://peggoy.fun · X/Telegram: @peggoydotfun
+Launch: **Sat 03 Oct 2026 · 15:00 UTC** (22:00 WIB). Site: https://peggoy.fun · X/Telegram: @peggoydotfun
 
 Until launch the Machine page runs the **testnet demo** (free tPEGGOY faucet). At launch it switches to mainnet;
 the demo stays at `/machine.html?net=testnet`.
@@ -33,10 +33,10 @@ the demo stays at `/machine.html?net=testnet`.
 3. `./deploy.sh ca 0x<CA>`: CA + copy + Buy on Pons go live, the Machine page switches to mainnet.
 4. Point the Pons creator-fee recipient at the Machine address, so creator tax flows 80/20 into stream and Drop.
 
-## Before the first Drop (Fri 10 Oct 15:00 UTC)
+## Before the first Drop (Sat 10 Oct 15:00 UTC)
 
 Drop distributor v2 (drand verifier + winner tree), then `setDropDistributor` through the timelock (48 h notice:
-schedule it by Wed 08 Oct 15:00 UTC at the latest). If it is late, nothing is lost: the pot waits, and after
+schedule it by Thu 08 Oct 15:00 UTC at the latest). If it is late, nothing is lost: the pot waits, and after
 30 days anyone can roll it forward.
 
 ## Emergency

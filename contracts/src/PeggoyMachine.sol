@@ -28,7 +28,7 @@ contract PeggoyMachine is Ownable2Step, ReentrancyGuard {
     /// @notice A Drop pot nobody released this long after its epoch ended rolls into the current epoch.
     uint256 public constant ROLL_GRACE = 30 days;
 
-    /// @notice Epoch 0 starts here (Fri 03 Oct 2026 15:00 UTC on mainnet). Epochs change every Friday 15:00 UTC.
+    /// @notice Epoch 0 starts here (Sat 03 Oct 2026 15:00 UTC on mainnet). Epochs change every Saturday 15:00 UTC.
     uint256 public immutable GENESIS;
     /// @notice May call setStakingToken once. Nothing else.
     address public immutable launcher;

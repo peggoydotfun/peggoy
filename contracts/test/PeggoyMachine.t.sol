@@ -80,7 +80,7 @@ contract Reenterer {
 }
 
 contract PeggoyMachineTest is Test {
-    uint256 constant GENESIS = 1791039600; // Fri 03 Oct 2026 15:00 UTC
+    uint256 constant GENESIS = 1791039600; // Sat 03 Oct 2026 15:00 UTC
     uint256 constant WEEK = 7 days;
 
     PeggoyMachine m;
