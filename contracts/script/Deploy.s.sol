@@ -9,10 +9,12 @@ import {PeggoyDrop, IPeggoyMachine} from "../src/PeggoyDrop.sol";
 
 /// Robinhood Chain mainnet (4663). Deploy BEFORE launch; the token is set at launch with setStakingToken.
 ///
-///   SAFE=0x<team Safe 2-of-3> [LAUNCHER=0x..] [GENESIS=1791039600] \
+///   [SAFE=0x<Safe>] [LAUNCHER=0x..] [GENESIS=1791039600] \
 ///   forge script script/Deploy.s.sol --rpc-url robinhood --broadcast --private-key $(cat ../ops/keys/deployer.key)
 ///
-/// - Owner of the Machine = a TimelockController (48 h). Proposer and executor = the Safe. No admin.
+/// - Owner of the Machine = a TimelockController (48 h). Proposer and executor = SAFE if given, else the deployer.
+///   No timelock admin. Without a Safe the script also schedules setDropDistributor(DROP) right away, so the Drop
+///   contract is locked in 48 h later (it can never be changed afterwards) and only bounded parameters remain.
 /// - LAUNCHER (default: the deployer) may call setStakingToken once, then has no power at all. Using the deployer
 ///   keeps launch fast (one signature at 15:00 UTC instead of two); the worst it can do is set a wrong token
 ///   before anyone stakes, which only means redeploying.
@@ -24,19 +26,24 @@ contract Deploy is Script {
     address constant PONS_FEE_ESCROW = 0xd3AFEB2a57f70eF218Aa82451c51B2fb0416Ac9e;
 
     function run() external {
-        address safe = vm.envAddress("SAFE");
+        address safe = vm.envOr("SAFE", address(0));
         uint256 genesis = vm.envOr("GENESIS", uint256(1791039600)); // Sat 03 Oct 2026 15:00 UTC
         require(block.chainid == 4663 || block.chainid == 31337, "not Robinhood Chain mainnet");
-        require(safe.code.length > 0, "SAFE is not a contract: create it on app.safe.global first");
+        require(safe == address(0) || safe.code.length > 0, "SAFE is not a contract");
 
         vm.startBroadcast();
         address launcher = vm.envOr("LAUNCHER", msg.sender);
+        address admin = safe == address(0) ? msg.sender : safe;
         address[] memory roles = new address[](1);
-        roles[0] = safe;
+        roles[0] = admin;
         TimelockController timelock = new TimelockController(48 hours, roles, roles, address(0));
         PeggoyMachine machine = new PeggoyMachine(address(timelock), launcher, genesis);
         PeggoyFeeForwarder forwarder = new PeggoyFeeForwarder(IPonsFeeEscrow(PONS_FEE_ESCROW), payable(address(machine)));
         PeggoyDrop drop = new PeggoyDrop(IPeggoyMachine(address(machine)));
+        bytes memory appoint = abi.encodeCall(PeggoyMachine.setDropDistributor, (address(drop)));
+        if (admin == msg.sender) {
+            timelock.schedule(address(machine), 0, appoint, bytes32(0), keccak256("peggoy-drop-v1"), 48 hours);
+        }
         vm.stopBroadcast();
 
         require(machine.owner() == address(timelock), "owner");
@@ -45,6 +52,8 @@ contract Deploy is Script {
         console2.log("LAUNCHER", launcher);
         console2.log("FEE_FORWARDER (Pons creator-fee wallet)", address(forwarder));
         console2.log("DROP    ", address(drop));
+        console2.log("TIMELOCK ADMIN (proposer/executor)", admin);
+        if (admin == msg.sender) console2.log("setDropDistributor scheduled: execute after", block.timestamp + 48 hours);
         console2.log("next: ./deploy.sh machine <MACHINE> <TIMELOCK> <FORWARDER> <DROP>; create $PEGGOY on Pons with fee wallet = FEE_FORWARDER; setStakingToken(<CA>); ./deploy.sh ca <CA>");
     }
 }

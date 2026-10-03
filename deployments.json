@@ -25,13 +25,13 @@
       "rpc": "https://rpc.ordofi.network",
       "walletRpc": "https://robinhood-rpc.publicnode.com",
       "explorer": "https://robinhoodchain.blockscout.com",
-      "machine": "",
-      "timelock": "",
+      "machine": "0xd7CC13c7FEcfedC6E4399b163b007DB8e8cAaCe1",
+      "timelock": "0x91f109aC7230b0be44b099Ccb33f3C824f1ed8C5",
       "token": "",
-      "drop": "",
+      "drop": "0xeD560Ab69C2eb6C7282D333FE19166B5cA1Fe7c9",
       "genesis": 1791039600,
       "rpcFallback": "https://robinhood-rpc.publicnode.com",
-      "forwarder": ""
+      "forwarder": "0x43B740DF5280af55D74cB565dE337464FbF61B9e"
     }
   }
 }
