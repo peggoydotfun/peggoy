@@ -3,7 +3,7 @@
 #
 #   ./deploy.sh setup [domain]   once: web root, nginx site, TLS (default domain peggoy.fun)
 #   ./deploy.sh                  build dist/ and ship it
-#   ./deploy.sh machine 0xMACHINE 0xTIMELOCK   record the mainnet Machine (after script/Deploy.s.sol), testnet stays active
+#   ./deploy.sh machine 0xMACHINE 0xTIMELOCK 0xFORWARDER 0xDROP   record mainnet contracts (after script/Deploy.s.sol)
 #   ./deploy.sh ca 0xTOKEN|TBA   launch: CA on the site (copy + Buy on Pons), Machine page switches to mainnet;
 #                                TBA puts "SOON" back and returns the Machine page to the testnet demo
 #   ./deploy.sh status           nginx + https check
@@ -79,12 +79,13 @@ PY
     echo "   CA on site: ${NEW:-Coming} · Buy → ${NEW:+https://www.ponsfamily.com/launchpad/$NEW}"
     ;;
   machine)
-    M=${2:?usage: ./deploy.sh machine 0xMACHINE 0xTIMELOCK}; T=${3:?usage: ./deploy.sh machine 0xMACHINE 0xTIMELOCK}
-    [[ $M =~ ^0x[0-9a-fA-F]{40}$ && $T =~ ^0x[0-9a-fA-F]{40}$ ]] || { echo "not addresses"; exit 1; }
-    python3 - "$M" "$T" <<'PY'
+    U="usage: ./deploy.sh machine 0xMACHINE 0xTIMELOCK 0xFORWARDER 0xDROP"
+    M=${2:?$U}; T=${3:?$U}; F=${4:?$U}; D=${5:?$U}
+    for a in $M $T $F $D; do [[ $a =~ ^0x[0-9a-fA-F]{40}$ ]] || { echo "not an address: $a"; exit 1; }; done
+    python3 - "$M" "$T" "$F" "$D" <<'PY'
 import json, sys
 d = json.load(open('deployments.json'))
-d['networks']['mainnet'].update(machine=sys.argv[1], timelock=sys.argv[2])
+d['networks']['mainnet'].update(machine=sys.argv[1], timelock=sys.argv[2], forwarder=sys.argv[3], drop=sys.argv[4])
 json.dump(d, open('deployments.json', 'w'), indent=2); open('deployments.json', 'a').write('\n')
 PY
     ship
@@ -93,5 +94,5 @@ PY
     ssh "$HOST" "nginx -t 2>&1 | tail -1; ls /var/www/peggoy | head"
     curl -s -o /dev/null -w "public https: %{http_code}\n" "https://$DOMAIN/" || true
     ;;
-  *) echo "usage: ./deploy.sh [setup [domain]|deploy|machine 0x… 0x…|ca 0x…|TBA|status]"; exit 1 ;;
+  *) echo "usage: ./deploy.sh [setup [domain]|deploy|machine 0xM 0xT 0xF 0xD|ca 0x…|TBA|status]"; exit 1 ;;
 esac

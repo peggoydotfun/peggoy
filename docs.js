@@ -11,7 +11,7 @@ const cell = (net, a) => (isAddr(a)
 
 fetch('deployments.json', { cache: 'no-store' }).then((r) => r.json()).then(({ networks: { mainnet: m, testnet: t } }) => {
   const rows = [
-    ['PeggoyMachine', 'machine'], ['PeggoyDrop', 'drop'], ['Timelock (48 h)', 'timelock'], ['Token', 'token'],
-  ].map(([label, k]) => `<tr><td>${label}${k === 'token' ? ' <span class="muted">($PEGGOY / tPEGGOY)</span>' : ''}</td><td>${cell(m, m[k])}</td><td>${cell(t, t[k])}</td></tr>`);
+    ['PeggoyMachine', 'machine'], ['PeggoyFeeForwarder', 'forwarder'], ['PeggoyDrop', 'drop'], ['Timelock (48 h)', 'timelock'], ['Token', 'token'],
+  ].map(([label, k]) => `<tr><td>${label}${k === 'token' ? ' <span class="muted">($PEGGOY / tPEGGOY)</span>' : ''}</td><td>${cell(m, m[k])}</td><td>${k === 'forwarder' && !isAddr(t[k]) ? '<span class="muted">mainnet only</span>' : cell(t, t[k])}</td></tr>`);
   document.querySelector('#addr tbody').innerHTML = rows.join('');
 }).catch(() => { document.querySelector('#addr tbody').innerHTML = '<tr><td colspan="3">Could not load addresses.</td></tr>'; });

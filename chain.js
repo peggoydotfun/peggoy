@@ -9,7 +9,7 @@ const SEL = {
   dropBps: '0xd9129498', currentEpoch: '0x76671808', epochEnd: '0xd9be1efe', dropPot: '0xc24aacdb',
   balanceOf: '0x70a08231', earned: '0x008cc262', ballsOf: '0x5bdf4d58', totalBalls: '0xc7b2d850',
   allowance: '0xdd62ed3e', decimals: '0x313ce567', symbol: '0x95d89b41',
-  approve: '0x095ea7b3', faucet: '0xde5f72fd',
+  approve: '0x095ea7b3', faucet: '0xde5f72fd', fwdPending: '0xe20ccec3', fwdPull: '0x329eb839',
   drandRound: '0xaa694896', draws: '0x0cc36c36', settle: '0x39c2ebb9', enter: '0x8ecee083', winner: '0xb47deb3c',
   paid: '0x8d42394d', entered: '0x4d333814', claimSlot: '0xc3490263', dropDistributor: '0x0ca86d3a', stake: '0xa694fc3a', withdraw: '0x2e1a7d4d', claim: '0x4e71d92d', exit: '0xe9fad8ee', roll: '0xcd5e3c5d',
 };
@@ -65,6 +65,9 @@ export async function machineState(user) {
   };
   const [pot, epochEnd, totalBalls] = await Promise.all([uint(M, enc(SEL.dropPot, epoch)), uint(M, enc(SEL.epochEnd, epoch)), uint(M, enc(SEL.totalBalls, epoch))]);
   Object.assign(s, { pot, epochEnd: Number(epochEnd), totalBalls });
+  // creator fees waiting in the Pons escrow (+ forwarder balance), movable into the Machine by anyone
+  s.forwarder = /^0x[0-9a-fA-F]{40}$/.test(c.forwarder || '') ? c.forwarder : null;
+  s.feesWaiting = s.forwarder ? await uint(s.forwarder, SEL.fwdPending).catch(() => 0n) : 0n;
   if (s.token) s.decimals = Number(await uint(s.token, SEL.decimals));
   if (user) {
     const [mine, earned, balls] = await Promise.all([uint(M, enc(SEL.balanceOf, user)), uint(M, enc(SEL.earned, user)), uint(M, enc(SEL.ballsOf, user, epoch))]);
@@ -136,6 +139,7 @@ export const tx = {
   exit: (m) => send(m, SEL.exit),
   roll: (m) => send(m, SEL.roll),
   faucet: (token) => send(token, SEL.faucet), // testnet demo token only
+  pullFees: (fwd) => send(fwd, SEL.fwdPull),
   // PeggoyDrop: settle(uint256,bytes) and enter(uint256,address[]) carry dynamic args, encoded by hand
   settle: (drop, week, sigHex) => send(drop, SEL.settle + word(week) + word(0x40) + word(64) + sigHex),
   enter: (drop, week, user) => send(drop, SEL.enter + word(week) + word(0x40) + word(1) + addrWord(user)),

@@ -33,6 +33,7 @@ No free-signature airdrop: free entries get farmed by design, so nothing is give
 | Owner | 2-of-3 Safe behind a 48 h `TimelockController`; bounded parameters only, no path to stakes or streamed ETH |
 | No dust tricks | `roll()` needs 0.01 ETH queued or the round over, so a 1-wei round can't hold real rewards back |
 | No stuck ETH | An unreleased Drop pot rolls into the current week after 30 days, by anyone |
+| Fees in | The Pons creator-fee wallet is `PeggoyFeeForwarder` (no owner): anyone pulls fees from the Pons escrow into the Machine |
 
 Full design and the gaps it closes: [`ARCHITECTURE.md`](ARCHITECTURE.md). Launch steps: [`LAUNCH.md`](LAUNCH.md).
 
@@ -44,11 +45,11 @@ Full design and the gaps it closes: [`ARCHITECTURE.md`](ARCHITECTURE.md). Launch
 | `PeggoyDrop` (demo) | Robinhood testnet 46630 | `0x6e8e3162eAF5e74ea523985CA0AEA8baB6dd9331` |
 | `TimelockController` (demo) | Robinhood testnet 46630 | `0xebA64E8187b941E538420f286BBAA9c1A927f984` |
 | `DemoToken` tPEGGOY (faucet) | Robinhood testnet 46630 | `0xdf7edd050F0af2773C32F955857142995E084e64` |
-| `PeggoyMachine` | Robinhood Chain 4663 | deployed before launch |
+| `PeggoyMachine`, `PeggoyFeeForwarder`, `PeggoyDrop` | Robinhood Chain 4663 | deployed before launch |
 
 ```bash
 git clone --recurse-submodules https://github.com/peggoydotfun/peggoy.git
-cd peggoy/contracts && forge test     # 41 tests: fuzzed solvency, balls accounting, real drand beacons, win-rate statistics
+cd peggoy/contracts && forge test     # 45 tests: fuzzed solvency, balls accounting, real drand beacons, win-rate statistics, fee forwarding
 ```
 
 > [!IMPORTANT]

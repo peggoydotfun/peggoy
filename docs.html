@@ -89,6 +89,9 @@
         <p>ETH that reaches the Machine waits in a queue, then streams to stakers pro rata over 7 days, second by second. A deposit cannot be sniped: staking a minute before ETH arrives earns a minute's share, not the whole deposit.</p>
         <p>Anyone can <b>roll</b> the queue into the stream when a round ends, or mid-round once at least 0.01 ETH is queued (the leftover of the running round rolls in with it). That threshold stops a 1-wei round from holding real rewards back for a week.</p>
         <p>ETH that streams while nobody is staked goes back to the queue instead of being lost.</p>
+        <h3>Where the ETH comes from</h3>
+        <p>$PEGGOY trades on Pons. The creator side of the trading fee (and the creator tax) is paid to the token's <b>fee wallet</b>, which is the <code>PeggoyFeeForwarder</code> contract. Pons credits those fees to its escrow after each sweep; from there <b>anyone</b> can press <b>Pull fees</b> on the Machine page, which claims them and forwards every wei to the Machine. The forwarder has no owner and can only ever pay the Machine.</p>
+        <p class="docs__note">Pons lets a token's creator wallet point future fees at a different address. That is a Pons feature we cannot remove; any such change is a public transaction anyone can see on chain.</p>
       </section>
 
       <section id="drop">
@@ -139,6 +142,7 @@
             <li>Touch ETH already streamed to stakers</li>
             <li>Pick Drop winners or the drand round</li>
             <li>Swap the Drop contract once appointed</li>
+            <li>Take ETH out of the fee forwarder (it has no owner)</li>
           </ul></div>
         </div>
       </section>

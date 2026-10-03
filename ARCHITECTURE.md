@@ -79,6 +79,12 @@ pegboard in **practice mode** (browser only, no wallet, no prize). Wallet connec
 - Owner (timelock): `minRoll` (≤ 1 ETH), stream duration (1–30 days, between rounds), drop share (≤ 30%),
   `setDropDistributor` (once), `recoverERC20` (never the staking token). `launcher`: `setStakingToken`, once.
 
+**`PeggoyFeeForwarder.sol`** (the Pons creator-fee wallet)
+Pons v2 credits creator fees to its escrow (`0xd3AF…Ac9e`), and recipients must `claim()` them; fees pointed at the
+Machine directly would be stuck. The forwarder is the fee wallet: anyone calls `pull()`, which claims from the escrow
+and forwards every wei to the Machine (split 80/20 on arrival). No owner; escrow and Machine fixed at deploy. Fork-tested
+against the real escrow. Keep Pons buybacks off (a buyback vest pays in the launch token).
+
 **`PeggoyDrop.sol`** (the distributor)
 1. `settle(week, signature)`: anyone, after the week ends, with drand evmnet's signature for
    `drandRound(week)` = the first round published after the week closed. Verified on chain with randa-mu's BN254

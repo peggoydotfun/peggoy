@@ -92,7 +92,9 @@ function stream() {
     ${kv('LEFT THIS ROUND', eth(s.remaining))}
     ${kv('ROUND ENDS', s.finish > now() ? `<span data-left="${s.finish}">${left(s.finish)}</span>` : '—')}
     ${kv('QUEUED NEXT', eth(s.queued))}
+    ${s.forwarder ? kv('FEES AT PONS', eth(s.feesWaiting)) : ''}
     <p class="small muted">ETH waits in the queue, then streams over ${Math.round(s.duration / 86400)} days. Anyone can start the next round when one ends, or mid-round once ${eth(s.minRoll)} is queued.</p>
+    ${s.forwarder && s.feesWaiting > 0n ? `<button class="gb" type="button" data-act="pull" ${ST.busy ? 'disabled' : ''}>▶ PULL FEES INTO THE MACHINE</button><p class="small muted">Creator fees wait in the Pons escrow until someone pulls them. Anyone can: it only ever pays the Machine.</p>` : ''}
     ${canRoll ? `<button class="gb gb--go" type="button" data-act="roll" ${ST.busy ? 'disabled' : ''}>▶ ROLL QUEUED ETH IN</button>` : ''}`;
 }
 
@@ -141,7 +143,7 @@ function contracts() {
   const s = ST.s, c = ST.cfg;
   if (!c) return '';
   const row = (k, a) => kv(k, /^0x[0-9a-fA-F]{40}$/.test(a || '') ? link(a) : 'AT LAUNCH');
-  return `${kv('NETWORK', c.demo ? 'TESTNET (DEMO)' : 'MAINNET')}${row('MACHINE', c.machine)}${row('DROP', c.drop)}${row('TIMELOCK 48H', c.timelock)}${row(c.demo ? 'tPEGGOY' : '$PEGGOY', s?.token || c.token)}
+  return `${kv('NETWORK', c.demo ? 'TESTNET (DEMO)' : 'MAINNET')}${row('MACHINE', c.machine)}${row('FEE FORWARDER', c.forwarder)}${row('DROP', c.drop)}${row('TIMELOCK 48H', c.timelock)}${row(c.demo ? 'tPEGGOY' : '$PEGGOY', s?.token || c.token)}
     ${c.net !== c.active ? '' : c.demo ? '<p class="small"><a href="?net=mainnet">Mainnet view ↗</a></p>' : '<p class="small"><a href="?net=testnet">Try the testnet demo ↗</a></p>'}
     <p class="small muted">${c.demo ? 'Testnet demo: same contract and 48 h timelock as mainnet; here the timelock is run by the deployer instead of the Safe.' : 'Owner is a 2-of-3 Safe behind a 48 h timelock. It can tune bounded numbers, never touch stakes or streamed ETH.'}</p>`;
 }
@@ -194,6 +196,7 @@ const ACT = {
   exit: () => run('EXIT', () => C.tx.exit(ST.s.machine)),
   roll: () => run('ROLL', () => C.tx.roll(ST.s.machine)),
   faucet: () => run('FAUCET', () => C.tx.faucet(ST.s.token)),
+  pull: () => run('PULL FEES', () => C.tx.pullFees(ST.s.forwarder)),
   settle: () => run('SETTLE', async () => { const sig = await C.drandSignature(ST.d.round); await C.tx.settle(ST.d.drop, ST.d.week, sig); }),
   enter: () => run('ENTER', () => C.tx.enter(ST.d.drop, ST.d.week, W.account().address)),
 };

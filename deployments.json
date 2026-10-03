@@ -16,7 +16,8 @@
       "faucets": [
         "https://faucet.zalalena.com/robinhood"
       ],
-      "rpcFallback": "https://robinhood-sepolia-rpc.publicnode.com"
+      "rpcFallback": "https://robinhood-sepolia-rpc.publicnode.com",
+      "forwarder": ""
     },
     "mainnet": {
       "chainId": 4663,
@@ -29,7 +30,8 @@
       "token": "",
       "drop": "",
       "genesis": 1791039600,
-      "rpcFallback": "https://robinhood-rpc.publicnode.com"
+      "rpcFallback": "https://robinhood-rpc.publicnode.com",
+      "forwarder": ""
     }
   }
 }
