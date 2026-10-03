@@ -11,7 +11,7 @@ import { initConnect } from './connect-ui.js';
 const CONFIG = {
   ca: '',
   launch: Date.UTC(2026, 9, 3, 15, 0, 0), // Sat 03 Oct 2026 · 15:00 UTC
-  pons: 'https://ponsfamily.com/launchpad/',
+  pons: 'https://www.ponsfamily.com/launchpad/',
 };
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -37,6 +37,15 @@ function tick() {
   return true;
 }
 if (tick()) { const iv = setInterval(() => { if (!tick()) clearInterval(iv); }, 1000); }
+
+// ---------- launch timeline: stages clear as their time passes, the next one lights up ----------
+(function stages() {
+  const now = Date.now() / 1000;
+  const cards = $$('.stage-card[data-at]');
+  let next = null;
+  cards.forEach((c) => { const done = now >= +c.dataset.at; c.classList.toggle('is-done', done); if (!done && !next) next = c; });
+  (next || $('.stage-card:not([data-at])'))?.classList.add('is-next');
+})();
 
 // ---------- contract address / buy buttons ----------
 (function applyCA() {
@@ -275,7 +284,7 @@ function initStage() {
     }
     if (!best || bestVis < 0.15) return { name: null };
     const r = best.getBoundingClientRect();
-    return { name: best.dataset.stage, k: (h - r.top) / (h + r.height) }; // 0 → entering, 1 → leaving
+    return { name: best.dataset.stage, k: (h - r.top) / (h + r.height), top: r.top }; // k: 0 → entering, 1 → leaving
   }
 
   const clock = new THREE.Clock();
@@ -293,7 +302,13 @@ function initStage() {
       if (!m.obj.visible) continue;
       anyVisible = true;
       if (name === 'cabinet') {
-        m.obj.position.set(desktop ? 2.5 : 0, -0.15 + (scrollK - 0.5) * 1.0, 0);
+        // scroll with the hero (no fixed overlay over the next section): hero top in px → world units
+        const visH = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+        const heroTop = zones[0].getBoundingClientRect().top;
+        const ks = Math.min(1, Math.max(0.55, camera.aspect / 1.6)); // smaller on narrow/portrait viewports
+        m.obj.scale.setScalar(m.base * ks);
+        const x = Math.min(2.5, visH * camera.aspect * 0.3); // and kept on screen
+        m.obj.position.set(desktop ? x : 0, -0.15 - (heroTop / h) * visH, 0);
         m.obj.rotation.set(0.05, -0.55 + scrollK * 2.2 + Math.sin(t * 0.5) * 0.06, 0);
       } else {
         // sit just above the closing title, wherever the layout puts it

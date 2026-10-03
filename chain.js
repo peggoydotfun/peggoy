@@ -31,17 +31,19 @@ export async function config() {
 
 async function rpc(method, params) {
   const c = await config();
-  try {
-    const r = await fetch(c.rpc, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: ++rpcId, method, params }) });
-    const j = await r.json();
-    if (j.error) throw new Error(j.error.message || 'RPC error');
-    return j.result;
-  } catch (e) {
-    // fall back to the connected wallet's own RPC when it is on the right chain
-    const acc = W.account();
-    if (acc && acc.chainId === c.chainId) return acc.provider.request({ method, params });
-    throw e;
+  let err;
+  for (const url of [c.rpc, c.rpcFallback].filter(Boolean)) { // public RPC, then a second provider
+    try {
+      const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: ++rpcId, method, params }) });
+      const j = await r.json();
+      if (j.error) throw new Error(j.error.message || 'RPC error');
+      return j.result;
+    } catch (e) { err = e; }
   }
+  // last resort: the connected wallet's own RPC when it is on the right chain
+  const acc = W.account();
+  if (acc && acc.chainId === c.chainId) return acc.provider.request({ method, params });
+  throw err;
 }
 const call = (to, data) => rpc('eth_call', [{ to, data }, 'latest']);
 const uint = async (to, data) => BigInt(await call(to, data));

@@ -35,7 +35,7 @@ async function load() {
 function status() {
   const s = ST.s, c = ST.cfg;
   if (!s) return 'READING CHAIN…';
-  if (c.demo) return 'TESTNET DEMO · TOKENS HAVE NO VALUE · MAINNET OPENS 03 OCT 15:00 UTC';
+  if (c.demo) return Date.now() < 1791039600e3 ? 'TESTNET DEMO · TOKENS HAVE NO VALUE · MAINNET OPENS 03 OCT 15:00 UTC' : 'TESTNET DEMO · TOKENS HAVE NO VALUE · THE MAINNET MACHINE IS OPENING, REFRESH IN A FEW MINUTES';
   if (!s.deployed) return `OPENS ${new Date(c.genesis * 1000).toUTCString().slice(5, 16).toUpperCase()} · 15:00 UTC`;
   if (!s.token) return 'DEPLOYED · TOKEN IS SET AT LAUNCH';
   return 'LIVE · ROBINHOOD CHAIN';

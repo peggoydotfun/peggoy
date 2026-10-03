@@ -13,19 +13,23 @@
       "drop": "0x6e8e3162eAF5e74ea523985CA0AEA8baB6dd9331",
       "genesis": 1790434800,
       "demo": true,
-      "faucets": ["https://faucet.chainstack.com/robinhood-chain-testnet-faucet", "https://faucet.quicknode.com/robinhood/testnet"]
+      "faucets": [
+        "https://faucet.zalalena.com/robinhood"
+      ],
+      "rpcFallback": "https://robinhood-sepolia-rpc.publicnode.com"
     },
     "mainnet": {
       "chainId": 4663,
       "chainName": "Robinhood Chain",
       "rpc": "https://rpc.ordofi.network",
-      "walletRpc": "https://rpc.mainnet.chain.robinhood.com",
+      "walletRpc": "https://robinhood-rpc.publicnode.com",
       "explorer": "https://robinhoodchain.blockscout.com",
       "machine": "",
       "timelock": "",
       "token": "",
       "drop": "",
-      "genesis": 1791039600
+      "genesis": 1791039600,
+      "rpcFallback": "https://robinhood-rpc.publicnode.com"
     }
   }
 }

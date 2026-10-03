@@ -19,7 +19,7 @@ DOMAIN=$(cat .deploy-domain 2>/dev/null || echo peggoy.fun)
 build() {
   echo "→ dist/ (public files only, cache-busted)"
   rm -rf dist && mkdir -p dist/assets
-  cp index.html machine.html docs.html styles.css main.js machine.js docs.js board.js sound.js wallet.js chain.js connect-ui.js deployments.json robots.txt og.png favicon.ico site.webmanifest dist/
+  cp index.html machine.html docs.html styles.css main.js machine.js docs.js board.js sound.js wallet.js chain.js connect-ui.js deployments.json robots.txt sitemap.xml 404.html og.png favicon.ico site.webmanifest dist/
   cp -R assets/img assets/models dist/assets/
   V=$(date +%s)
   sed -i '' "s|href=\"styles.css\"|href=\"styles.css?v=$V\"|; s|src=\"main.js\"|src=\"main.js?v=$V\"|" dist/index.html
@@ -76,7 +76,7 @@ json.dump(d, open('deployments.json', 'w'), indent=2); open('deployments.json', 
 print('   Machine page network:', d['active'], '' if d['active'] == 'mainnet' or not ca else '(run ./deploy.sh machine … first)')
 PY
     ship
-    echo "   CA on site: ${NEW:-Coming} · Buy → ${NEW:+https://ponsfamily.com/launchpad/$NEW}"
+    echo "   CA on site: ${NEW:-Coming} · Buy → ${NEW:+https://www.ponsfamily.com/launchpad/$NEW}"
     ;;
   machine)
     M=${2:?usage: ./deploy.sh machine 0xMACHINE 0xTIMELOCK}; T=${3:?usage: ./deploy.sh machine 0xMACHINE 0xTIMELOCK}
